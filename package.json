@@ -1,0 +1,19 @@
+{
+  "name": "lotor",
+  "version": "1.0.0",
+  "description": "Libraries of the Old Republic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canderis/lotor.git"
+  },
+  "author": "Canderis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/canderis/lotor/issues"
+  },
+  "homepage": "https://github.com/canderis/lotor#readme"
+}
