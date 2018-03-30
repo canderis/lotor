@@ -3,7 +3,13 @@ class Bif {
 		this.directory = directory;
 	}
 
-	
+	getBifTree(){
+		if(!this.bifTree){
+			this.buildBifTree();
+		}
+
+		return this.bifTree;
+	}
 
 	fileExtensionLookup: {
 		'1':    {fileExtension: 'bmp', editors:[]},
