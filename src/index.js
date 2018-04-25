@@ -5,20 +5,9 @@
 import bif from './bif.js';
 import erf from './erf.js';
 
-export class lotor{
-    constructor(directory, fs){
-        var me = this;
-
-        me.directory = directory;
-        me.fileExtensionLookup = this.initFileExtensionLookup();
-        me.fs = fs;
-        me.bif = new bif(directory, fs, me);
-        me.erf = new erf(directory, fs, me);
-
-    }
-
-    initFileExtensionLookup(){
-		return {
+window.lotor = function(directory, fs){
+	var me = {
+		fileExtensionLookup:{
 			'1':    {fileExtension: 'bmp', editors:[]},
 			'3':    {fileExtension: 'tga', editors:[]},
 			'0':    {fileExtension: 'res', editors:[]},
@@ -108,6 +97,42 @@ export class lotor{
 			'9998': {fileExtension: 'bif', editors:[]},
 			'9999': {fileExtension: 'key', editors:[]}
 		}
+	};
+
+	me.directory = directory;
+	me.fs = fs;
+
+	if (!fs.existsSync(directory)) {
+		console.log('directory does not exist');
+		return false;
 	}
 
+	var data = fs.readdirSync(directory);
+
+
+	let key = data.find(function (row) {
+		return row === 'chitin.key';
+	})
+
+	if (!key) {
+		console.log('invalid directory');
+		return false;
+	}
+
+	let game = data.find(function (row) {
+		return row === 'swkotor2.ini';
+	});
+
+	if (game === 'swkotor2.ini') {
+		me.game = 'TSL';
+	}
+	else{
+		me.game = 'KOTOR'
+	}
+
+
+	me.bif = new bif(directory, fs, me);
+	me.erf = new erf(directory, fs, me);
+
+	return me;
 };
