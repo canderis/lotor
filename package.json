@@ -2,7 +2,7 @@
   "name": "lotor",
   "version": "1.0.0",
   "description": "Libraries of the Old Republic",
-  "main": "index.js",
+  "main": "lib/lotor.js",
   "scripts": {
     "build": "webpack --mode=production",
     "dev": "webpack --progress --colors --watch --mode=development"
