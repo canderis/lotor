@@ -4,7 +4,8 @@
   "description": "Libraries of the Old Republic",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --mode=production",
+    "dev": "webpack --progress --colors --watch --mode=development"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,13 @@
   "bugs": {
     "url": "https://github.com/canderis/lotor/issues"
   },
-  "homepage": "https://github.com/canderis/lotor#readme"
+  "homepage": "https://github.com/canderis/lotor#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15"
+  }
 }
