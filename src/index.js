@@ -2,9 +2,39 @@
 //
 // export { game };
 
+import chitin from './chitin.js';
 import bif from './bif.js';
 import erf from './erf.js';
+import rim from './rim.js';
 
+import tpc from './tpc.js';
+
+import instance from './instance.js';
+import twoda from './2da.js';
+import gff from './gff.js';
+
+import common from './common.js';
+
+let lotor;
+
+export default lotor = {
+  archive: {
+		Chitin: chitin,
+		BIF: bif,
+		ERF: erf,
+		RIM: rim
+	},
+	texture: {
+		TPC: tpc
+	},
+	game: {
+		Instance: instance,
+		TwoDA: twoda,
+		GFF: gff
+	}
+};
+
+/*
 window.lotor = function(directory, fs){
 	var me = {
 		fileExtensionLookup:{
@@ -136,3 +166,4 @@ window.lotor = function(directory, fs){
 
 	return me;
 };
+*/

@@ -1,4 +1,117 @@
+import Chitin from './chitin.js';
+
+const fs = require('fs');
+const path = require('path');
+
 export default class Bif {
+	constructor(filename = null, keys = []) {
+		this.filename = filename;
+		this.keys = keys;
+		this.fd = null;
+	}
+	open() {
+		// already opened, nothing to do
+		if (this.fd) return false;
+		this.fd = fs.openSync(this.filename, 'r');
+		// this call opened the file, indicate that by returning true
+		return true;
+	}
+	close(opened = true) {
+		// if false value given, caller did not actually open
+		if (!opened) return false;
+		fs.closeSync(this.fd);
+		this.fd = null;
+	}
+	readHeader(force = false) {
+		if (this.header && !force) return;
+		let opened = this.open();
+
+		const headerSize = 20;
+		let buffer = new Buffer(headerSize);
+		fs.readSync(this.fd, buffer, 0, headerSize, 0);
+
+		this.header = {
+			number_of_variable_resources: buffer.readUInt32LE(8),
+			number_of_fixed_resources: buffer.readUInt32LE(12),
+			offset_to_variable_resources: buffer.readUInt32LE(16)
+		};
+
+		this.close(opened);
+	}
+	read(key) {
+		let opened = this.open();
+
+		if (!this.header) this.readHeader();
+
+		let buffer;
+
+		const variableSize = 16;
+		buffer = new Buffer(variableSize);
+		fs.readSync(
+			this.fd, buffer, 0, variableSize,
+			this.header.offset_to_variable_resources +
+			(variableSize * key.indexOfFileInBif)
+		);
+		let variableTable = {
+			id: buffer.readUInt32LE(0),
+			offset_into_variable_resource_raw_data: buffer.readUInt32LE(4),
+			size_of_raw_data_chunk: buffer.readUInt32LE(8),
+			resource_type: buffer.readUInt32LE(12)
+		};
+		/*
+		console.log(variableTable);
+		console.log(key);
+		if (key.indexOfFileInBif > 10) {
+			console.log(this.header);
+			process.exit();
+		}
+		*/
+
+		buffer = new Buffer(variableTable.size_of_raw_data_chunk);
+		fs.readSync(
+			this.fd, buffer, 0, variableTable.size_of_raw_data_chunk,
+			variableTable.offset_into_variable_resource_raw_data
+		);
+
+		this.close(opened);
+
+		return buffer;
+	}
+	extract(savepath, filename = null) {
+		if (!this.filename) return console.log('ERROR: No bif file to extract from');
+		const bif_keys = this.keys.filter((bif_key) => {
+			const re = new RegExp(bif_key.fileName, 'i');
+			return !filename || filename.match(re);
+		});
+		console.log(bif_keys);
+		if (!bif_keys.length) return console.log('WARN: Files not found in bif');;
+
+		let opened = this.open();
+
+		for (const bif_key of bif_keys) {
+			/* limit this before trying to actually implement,
+			   writing 1000+ small files concurrently = machine hurt */
+			fs.writeFile(
+				path.join(savepath, bif_key.fileName), this.read(bif_key),
+				(err) => {
+					if (err) {
+						console.log('ERROR: Failed to write file: ' + path.join(savepath, bif_key.fileName));
+					} else {
+					  console.log('wrote ' + path.join(savepath, bif_key.fileName));
+					}
+				}
+			);
+			//*/
+			//fs.writeFileSync(path.join(savepath, bif_key.fileName), this.read(bif_key));
+			//console.log('wrote ' + path.join(savepath, bif_key.fileName));
+		}
+
+		this.close(opened);
+	}
+};
+
+/*
+class BifOld {
 	constructor(directory, fs, game){
 		var me = this;
 		me.fs = fs;
@@ -190,3 +303,4 @@ export default class Bif {
 	}
 
 };
+*/

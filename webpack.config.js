@@ -8,6 +8,7 @@ module.exports = {
   entry: [
     './src/index.js'
   ],
+  target: 'async-node',
   output: {
     path: __dirname + '/lib',
     filename: outputFile,
